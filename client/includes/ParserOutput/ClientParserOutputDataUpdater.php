@@ -119,6 +119,7 @@ class ClientParserOutputDataUpdater {
 		$item = $this->entityLookup->getEntity( $itemId );
 
 		if ( !$item || !$item->getSiteLinkList()->hasLinkWithSiteId( $this->siteId ) ) {
+			error_log( 'this happened:' . $this->siteId );
 			// Probably some sort of race condition or data inconsistency, better log a warning
 			wfLogWarning(
 				'According to a SiteLinkLookup ' . $itemId->getSerialization() .

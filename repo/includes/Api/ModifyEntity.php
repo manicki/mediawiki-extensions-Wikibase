@@ -244,14 +244,20 @@ abstract class ModifyEntity extends ApiBase {
 	 * @see ApiBase::execute()
 	 */
 	public function execute() {
+		error_log( 'exectuing:' . __CLASS__ );
 		$params = $this->extractRequestParams();
+		error_log( 'got params' );
 		$user = $this->getUser();
+		error_log( 'got user' );
 
 		$this->validateParameters( $params );
+		error_log( 'validated params' );
 
 		// Try to find the entity or fail and create it, or die in the process
 		$entity = $this->entitySavingHelper->loadEntity();
+		error_log( 'entity loaded' );
 		$entityRevId = $this->entitySavingHelper->getBaseRevisionId();
+		error_log( 'base rev id got' );
 
 		if ( $entity->getId() === null ) {
 			throw new LogicException( 'The Entity should have an ID at this point!' );
@@ -259,19 +265,25 @@ abstract class ModifyEntity extends ApiBase {
 
 		$preparedParameters = $this->prepareParameters( $params );
 		unset( $params );
+		error_log( 'prepared params' );
 
 		$this->validateEntitySpecificParameters( $preparedParameters, $entity, $entityRevId );
+		error_log( 'validated params 2' );
 
 		$changeOp = $this->getChangeOp( $preparedParameters, $entity );
+		error_log( 'got changeop' );
 
 		$status = $this->checkPermissions( $entity, $user, $changeOp );
+		error_log( 'permissions checked' );
 
 		if ( !$status->isOK() ) {
 			// Was …->dieError( 'You do not have sufficient permissions', … ) before T150512.
 			$this->errorReporter->dieStatus( $status, 'permissiondenied' );
 		}
+		error_log( 'status ok' );
 
 		$summary = $this->modifyEntity( $entity, $changeOp, $preparedParameters );
+		error_log( 'modified entity' );
 
 		if ( !$summary ) {
 			//XXX: This could rather be used for "silent" failure, i.e. in cases where
@@ -280,17 +292,21 @@ abstract class ModifyEntity extends ApiBase {
 		}
 
 		try {
+			error_log( 'trying to save' );
 			$status = $this->entitySavingHelper->attemptSaveEntity(
 				$entity,
 				$summary
 			);
+			error_log( 'save ok' );
 		} catch ( MWContentSerializationException $ex ) {
 			// This happens if the $entity created via modifyEntity() above (possibly cleared
 			// before) is not sufficiently initialized and failed serialization.
 			$this->errorReporter->dieError( $ex->getMessage(), 'failed-save' );
 		}
 
+		error_log( 'adding to output' );
 		$this->addToOutput( $entity, $status, $entityRevId );
+		error_log( 'done' );
 	}
 
 	/**

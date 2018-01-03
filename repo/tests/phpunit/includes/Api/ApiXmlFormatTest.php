@@ -66,6 +66,7 @@ class ApiXmlFormatTest extends ApiFormatTestCase {
 	}
 
 	public function testSetLabelXmlFormat() {
+		error_log( __METHOD__ );
 		$entityRevision = $this->getNewEntityRevision();
 		$entityId = $entityRevision->getEntity()->getId()->getSerialization();
 
@@ -97,6 +98,7 @@ class ApiXmlFormatTest extends ApiFormatTestCase {
 	}
 
 	public function testSetDescriptionXmlFormat() {
+		error_log( __METHOD__ );
 		$entityRevision = $this->getNewEntityRevision();
 		$entityId = $entityRevision->getEntity()->getId()->getSerialization();
 
@@ -128,6 +130,7 @@ class ApiXmlFormatTest extends ApiFormatTestCase {
 	}
 
 	public function testSetAliasesXmlFormat() {
+		error_log( __METHOD__ );
 		$entityRevision = $this->getNewEntityRevision();
 		$entityId = $entityRevision->getEntity()->getId()->getSerialization();
 
@@ -159,8 +162,11 @@ class ApiXmlFormatTest extends ApiFormatTestCase {
 	}
 
 	public function testSetSitelinkXmlFormat() {
+		error_log( __METHOD__ );
 		$entityRevision = $this->getNewEntityRevision();
+		error_log( 'got entity revision' );
 		$entityId = $entityRevision->getEntity()->getId()->getSerialization();
+		error_log( 'got entity id: ' . $entityId );
 
 		$params = [
 			'action' => 'wbsetsitelink',
@@ -172,14 +178,20 @@ class ApiXmlFormatTest extends ApiFormatTestCase {
 
 		/** @var SetSiteLink $module */
 		$module = $this->getApiModule( SetSiteLink::class, 'wbsetsitelink', $params, true );
+		error_log( 'got module' );
 		$siteTargetProvider = new SiteLinkTargetProvider( new HashSiteStore( TestSites::getSites() ), [] );
+		error_log( 'got site target provident' );
 		$module->setServices( $siteTargetProvider );
+		error_log( 'set site target provider' );
 		$result = $this->executeApiModule( $module );
+		error_log( 'got result' );
 		$actual = $this->removePageInfoAttributes( $result, $entityId );
+		error_log( 'got attributes:' . $actual );
 		//If a URL has been added just remove it as it is not always present
 		$actual = str_replace( 'url="https://en.wikipedia.org/wiki/Japan"', '', $actual );
 
 		$this->assertXmlStringEqualsXmlString( $this->getExpectedXml( 'setsitelink' ), $actual );
+		error_log( 'asserted 1' );
 
 		$params = [
 			'action' => 'wbsetsitelink',
@@ -190,14 +202,20 @@ class ApiXmlFormatTest extends ApiFormatTestCase {
 
 		/** @var SetSiteLink $module */
 		$module = $this->getApiModule( SetSiteLink::class, 'wbsetsitelink', $params, true );
+		error_log( 'got module 2' );
 		$module->setServices( $siteTargetProvider );
+		error_log( 'set provider 2' );
 		$result = $this->executeApiModule( $module );
+		error_log( 'got result 2' );
 		$actual = $this->removePageInfoAttributes( $result, $entityId );
+		error_log( 'got attributes2: ' . $actual );
 
 		$this->assertXmlStringEqualsXmlString( $this->getExpectedXml( 'setsitelink-removed' ), $actual );
+		error_log( 'asserted 2' );
 	}
 
 	public function testSetClaimXmlFormat() {
+		error_log( __METHOD__ );
 		$this->getNewEntityRevision( true );
 
 		$json = file_get_contents( __DIR__ . '/../../data/api/setclaim.json' );

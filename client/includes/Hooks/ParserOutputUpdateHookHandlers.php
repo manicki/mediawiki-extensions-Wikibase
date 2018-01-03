@@ -97,6 +97,7 @@ class ParserOutputUpdateHookHandlers {
 			$this->langLinkHandler->addLinksFromRepository( $title, $parserOutput );
 		}
 
+		error_log( 'altering parser output' );
 		$this->parserOutputDataUpdater->updateItemIdProperty( $title, $parserOutput );
 		$this->parserOutputDataUpdater->updateOtherProjectsLinksData( $title, $parserOutput );
 		$this->parserOutputDataUpdater->updateBadgesProperty( $title, $parserOutput );

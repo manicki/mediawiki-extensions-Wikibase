@@ -14,9 +14,9 @@ originalDirectory=$(pwd)
 
 cd ..
 
-wget https://github.com/wikimedia/mediawiki/archive/$MW.tar.gz
-tar -zxf $MW.tar.gz
-mv mediawiki-$MW phase3
+wget https://github.com/manicki/mediawiki/archive/segfault.tar.gz
+tar -zxf segfault.tar.gz
+mv mediawiki-segfault phase3
 
 cd phase3
 composer self-update
