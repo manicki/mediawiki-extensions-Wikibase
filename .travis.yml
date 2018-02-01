@@ -27,18 +27,9 @@ script:
 notifications:
   email:
     recipients:
-      - wikidata-ci-status@wikimedia.de
       - leszek.manicki@wikimedia.de
-      - Ladsgroup@gmail.com
     on_success: change
     on_failure: always
-  irc:
-    channels:
-      - "chat.freenode.net#wikidata-feed"
-    on_success: change
-    on_failure: always
-    template:
-      - "%{repository}/%{branch}/%{commit} : %{author} %{message} %{build_url}"
 
 cache:
   directories:
