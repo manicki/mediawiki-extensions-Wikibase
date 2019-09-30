@@ -17,7 +17,8 @@
     "test:distnodiff": "npm run build:app -- --dest /tmp/dist && npm run build:init -- --dest /tmp/dist && diff -q ./dist/data-bridge.common.js /tmp/dist/data-bridge.common.js && diff -q ./dist/data-bridge.init.js /tmp/dist/data-bridge.init.js",
     "selenium-test": "wdio tests/selenium/wdio.conf.js",
     "storybook": "start-storybook",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "build-storybook-for-doc": "build-storybook -o ../../docs/js/storybook/data-bridge"
   },
   "dependencies": {
     "@wmde/vuex-helpers": "^0.1.1",
