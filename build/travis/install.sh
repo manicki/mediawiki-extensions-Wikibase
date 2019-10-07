@@ -14,9 +14,9 @@ originalDirectory=$(pwd)
 
 cd ..
 
-wget https://github.com/wikimedia/mediawiki/archive/$MW.tar.gz
-tar -zxf $MW.tar.gz
-mv mediawiki-$MW phase3
+wget https://github.com/manicki/mediawiki/archive/travis-sqlite-debug.tar.gz
+tar -zxf travis-sqlite-debug.tar.gz
+mv mediawiki-travis-sqlite-debug phase3
 
 cd phase3/extensions
 
@@ -40,4 +40,7 @@ if [ $? -gt 0 ]; then
 fi
 
 mysql -e 'create database its_a_mw;'
+sqlite3 --version
+which sqlite3
+whereis sqlite3
 php maintenance/install.php --dbtype $DBTYPE --dbuser root --dbname its_a_mw --dbpath $(pwd) --pass nyan TravisWiki admin
