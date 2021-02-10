@@ -1,0 +1,68 @@
+name: test with MW main branch
+on: push
+
+jobs:
+  testmain:
+    name: Test with MW main branch
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 32306:3306
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: password
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: Wikibase
+
+      - name: Checkout mediawiki
+        run: bash Wikibase/build/github/checkout-mediawiki.sh
+
+      - name: move Wikibase code to right place
+        run: |
+          mkdir -p mediawiki/extensions
+          mv Wikibase mediawiki/extensions/Wikibase
+
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
+
+      - name: Install mediawiki
+        # There certainly is a better way of doing composer install on github actions
+        #uses: php-actions/composer@v5
+        working-directory: mediawiki
+        run: |
+          sudo composer self-update --1
+          cp extensions/Wikibase/build/github/composer.local.json ./composer.local.json
+          composer install
+
+          sudo systemctl start mysql
+          echo "password" | mysql --host 127.0.0.1 --port 32306 -u root -e 'create database wiki135db;' -p
+          echo "password" | mysql --host 127.0.0.1 --port 32306 -u root -e 'create user "user"@"127.0.0.1" identified by "password";' -p
+          echo "password" | mysql --host 127.0.0.1 --port 32306 -u root -e 'grant all privileges on wiki135db.* to "user"@"%"' -p
+
+          php maintenance/install.php --dbtype mysql --dbserver 127.0.0.1:32306 --dbport 32306 --dbuser user --dbpass password --dbname wiki135db --pass p3a5sswory Wiki35 admin
+          #php maintenance/update.php --quick
+
+      - name: Enable Wikibase and create Wikibase database tables
+        working-directory: mediawiki
+        run: |
+          cd extensions/Wikibase
+          git submodule update --init
+          cd -
+          echo "wfLoadExtension( 'WikibaseRepository', \"\$IP/extensions/Wikibase/extension-repo.json\" );" >> LocalSettings.php
+          echo "require_once \"\$IP/extensions/Wikibase/repo/ExampleSettings.php\";" >> LocalSettings.php
+          echo "wfLoadExtension( 'WikibaseClient', \"\$IP/extensions/Wikibase/extension-client.json\" );" >> LocalSettings.php
+          echo "require_once \"\$IP/extensions/Wikibase/client/ExampleSettings.php\";" >> LocalSettings.php
+          php maintenance/update.php --quick
+
+      - name: Run phpunit tests
+        working-directory: mediawiki/tests/phpunit
+        run: php phpunit.php --group Wikibase
