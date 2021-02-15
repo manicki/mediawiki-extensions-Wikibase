@@ -7,6 +7,10 @@ namespace Wikibase\Repo\Tests\FederatedProperties;
 use MockHttpTrait;
 use Wikibase\Repo\WikibaseRepo;
 
+if ( !trait_exists( 'MockHttpTrait' ) ) {
+	require_once __DIR__ . '/FedPropsMockHttpTrait.php';
+}
+
 /**
  * This trait can be used to perform some standard actions on the fed props settings that may be
  * desired during tests.
