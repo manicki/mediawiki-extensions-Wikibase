@@ -43,6 +43,7 @@ use Wikibase\Lib\Store\Sql\EntityChangeLookup;
 use Wikibase\Repo\Api\MetaDataBridgeConfig;
 use Wikibase\Repo\Content\EntityContent;
 use Wikibase\Repo\Content\EntityHandler;
+use Wikibase\Repo\FederatedProperties\MwHttpRequestToResponseInterfaceAdapter;
 use Wikibase\Repo\Hooks\Helpers\OutputPageEntityViewChecker;
 use Wikibase\Repo\Hooks\InfoActionHookHandler;
 use Wikibase\Repo\Hooks\OutputPageEntityIdReader;
@@ -1171,6 +1172,14 @@ final class RepoHooks {
 
 	public static function onRegistration() {
 		global $wgResourceModules, $wgRateLimits;
+
+		// Backwards compatbility "layer" with Mediawiki 1.35
+		if ( !class_exists( 'MediaWiki\Http\MwHttpRequestToResponseInterfaceAdapter' ) ) {
+			class_alias(
+				MwHttpRequestToResponseInterfaceAdapter::class,
+				'MediaWiki\Http\MwHttpRequestToResponseInterfaceAdapter'
+			);
+		}
 
 		LibHooks::onRegistration();
 		ViewHooks::onRegistration();
