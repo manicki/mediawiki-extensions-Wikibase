@@ -33,6 +33,11 @@ jobs:
           mkdir -p mediawiki/extensions
           mv Wikibase mediawiki/extensions/Wikibase
 
+      - name: Install backwards compatibility hacks to Mediawiki
+        working-directory: mediawiki
+        run: |
+          git apply extensions/Wikibase/build/github/0001-apiresult.patch
+
       - name: Get Composer Cache Directory
         id: composer-cache
         working-directory: mediawiki

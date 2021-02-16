@@ -1,0 +1,13 @@
+diff --git a/includes/api/ApiResult.php b/includes/api/ApiResult.php
+index 92e7dd8918..d6916ee7c0 100644
+--- a/includes/api/ApiResult.php
++++ b/includes/api/ApiResult.php
+@@ -307,7 +307,7 @@ class ApiResult implements ApiSerializable {
+ 					"Conflicting keys ($keys) when attempting to merge element $name"
+ 				);
+ 			}
+-		} else {
++		} elseif ( $value !== $arr[$name] ) {
+ 			throw new RuntimeException(
+ 				"Attempting to add element $name=$value, existing value is {$arr[$name]}"
+ 			);
