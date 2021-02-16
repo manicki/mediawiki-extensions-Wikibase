@@ -9,6 +9,7 @@ use FauxRequest;
 use LogicException;
 use MediaWikiIntegrationTestCase;
 use Psr\Log\LogLevel;
+use RequestContext;
 use TestLogger;
 use Wikibase\Repo\Store\IdGenerator;
 use Wikibase\Repo\Store\LoggingIdGenerator;
@@ -21,6 +22,21 @@ use Wikibase\Repo\Store\LoggingIdGenerator;
  * @license GPL-2.0-or-later
  */
 class LoggingIdGeneratorTest extends MediaWikiIntegrationTestCase {
+
+	// Backwards compatibility "layer" with Mediawiki 1.35
+	protected function setRequest( $request ) {
+		if ( is_callable( 'parent::setRequest' ) ) {
+			parent::setRequest( $request );
+			return;
+		}
+
+		// copied from MW 1.36's MediaWikiIntegrationTestCase
+		global $wgRequest;
+		// It's not necessary to stash the value with setMwGlobals(), since
+		// it's reset on teardown anyway.
+		$wgRequest = $request;
+		RequestContext::getMain()->setRequest( $request );
+	}
 
 	public function testGetNewId_success() {
 		$requestPostValues = [
