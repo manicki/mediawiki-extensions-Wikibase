@@ -55,6 +55,21 @@ class ActionTestCase extends MediaWikiIntegrationTestCase {
 		parent::tearDown();
 	}
 
+	// Backwards compatibility "layer" with Mediawiki 1.35
+	protected function setRequest( $request ) {
+		if ( is_callable( 'parent::setRequest' ) ) {
+			parent::setRequest( $request );
+			return;
+		}
+
+		// copied from MW 1.36's MediaWikiIntegrationTestCase
+		global $wgRequest;
+		// It's not necessary to stash the value with setMwGlobals(), since
+		// it's reset on teardown anyway.
+		$wgRequest = $request;
+		RequestContext::getMain()->setRequest( $request );
+	}
+
 	/**
 	 * @var EntityDocument[]|EntityRedirect[] List of EntityDocument or EntityRedirect objects,
 	 *      with logical handles as keys.
