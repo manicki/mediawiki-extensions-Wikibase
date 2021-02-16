@@ -99,7 +99,7 @@ class PurgeEntityDataJob extends Job {
 			'ar_title' => $this->params['title'],
 			'ar_namespace' => $this->params['namespace'],
 		] );
-		$iterator->setCaller( __METHOD__ );
+		$this->adjustDebugLoggingSourceForIterator( $iterator, __METHOD__ );
 
 		foreach ( $iterator as $batch ) {
 			foreach ( $batch as $row ) {
@@ -107,5 +107,16 @@ class PurgeEntityDataJob extends Job {
 			}
 		}
 	}
+
+	// To allow backwards compatibility with Mediawiki 1.35
+	// This is definitely not the right way to do it. Better alternative would be
+	// e.g. having Wikibase's abstraction for accessing data from MW DB, and have
+	// the nasty details dealt with there
+	private function adjustDebugLoggingSourceForIterator( BatchRowIterator $iterator, string $callerName ) {
+		if ( method_exists( $iterator, 'setCaller' ) ) {
+			$iterator->setCaller( $callerName );
+		}
+	}
+
 
 }
